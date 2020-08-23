@@ -64,6 +64,11 @@ section {
 /* ---- Module Rules ---- */
 
 /* Navigation Styles*/
+
+.hidden {
+    display: none;
+}
+
 .navbar__menu ul {
     padding-left: 0;
     margin: 0;
@@ -80,6 +85,11 @@ section {
     font-weight: bold;
     text-decoration: none;
     color: #000;
+}
+
+.navbar__menu .selected {
+    background: #333;
+    color: #fff;
 }
 
 .navbar__menu .menu__link:hover {
@@ -220,4 +230,28 @@ section.your-active-class .landing__container::after {
 		           translate(-1em) 
 		           rotate(-360deg);
 	}
+}
+
+/* return to top button */
+
+#top-button {
+    cursor: pointer;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    background-color: yellowgreen;
+    height: 40px;
+    width: 40px;
+    font-size: 20px;
+    color: white;
+    border: none;
+    display: none;
+}
+
+#top-button:hover {
+    background-color: gray;
+}
+
+#top-button.show {
+    display: block;
 }
