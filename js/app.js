@@ -19,9 +19,9 @@
 */
 const sections = document.querySelectorAll('section');
 const menu = document.getElementById("navbar__list");
+const topButton = document.getElementById('top-button');
 // a variable used to hide the navigation bar
 var hide;
-const topButton = document.getElementById('top-button');
 
 
 /**
@@ -30,12 +30,13 @@ const topButton = document.getElementById('top-button');
  * 
 */
 
-function isInViewport(element) {
+// this function return the visible height of the section in the viewport
+function getVisibleHeight(element) {
     const windowHeight = (window.innerHeight || document.documentElement.clientHeight);
     const box = element.getBoundingClientRect();
-    if (box.top >= 0 && box.bottom <= windowHeight)
-        return true;
-    return false;
+    const top = Math.min(Math.max(box.top, 0), windowHeight);
+    const bottom = Math.min(Math.max(box.bottom, 0), windowHeight);
+    return bottom - top;
 }
 
 
@@ -63,24 +64,38 @@ function buildNav(){
 
 buildNav();
 
-// Add class 'active' to section when near top of viewport
-
-function updateActiveSection() {
+function scrollHandler() {
+    // make the navbar hidden
     menu.classList.remove('hidden');
+
+    // Add class 'active' to section when near top of viewport
+    // loop over sections and get the section that has the max visible height
+    let mx = 0;
+    let active = sections[0];
     for (let sec of sections) {
-        if (!isInViewport(sec)) {
+        let height = getVisibleHeight(sec);
+        if (height > mx) {
+            mx = height;
+            active = sec;
+        } else if (height < mx) {
+            // all of the next sections will be less in height, so break
+            break;
+        }
+    }
+    for (const sec of sections) {
+        if (getVisibleHeight(sec) < mx && sec.classList.contains('your-active-class')) {
             sec.classList.remove('your-active-class');
             let link = document.querySelector('a[data-id='+sec.id+']');
             link.classList.remove('selected');
-        }
-        else {
+        } else if (getVisibleHeight(sec) == mx && !sec.classList.contains('your-active-class')) {
             sec.classList.add('your-active-class');
             let link = document.querySelector('a[data-id='+sec.id+']');
             link.classList.add('selected');
         }
     }
-    window.clearTimeout(hide);
+
     // hide navigation bar when not scrolling
+    window.clearTimeout(hide);
     hide = setTimeout(() => {
         menu.classList.add("hidden");
     }, 3000);
@@ -119,7 +134,7 @@ menu.addEventListener('click', scrollToSection);
 
 // Set sections as active
 
-window.addEventListener("scroll", updateActiveSection);
+window.addEventListener("scroll", scrollHandler);
 
 
 // scroll to top when top button is clicked
